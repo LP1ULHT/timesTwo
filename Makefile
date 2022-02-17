@@ -1,32 +1,11 @@
-MKDIR   := mkdir
-RMDIR   := rm -rf
-CC      := gcc
-BIN     := ./bin
-OBJ     := ./obj
-INCLUDE := ./include
-SRC     := ./src
-SRCS    := $(wildcard $(SRC)/*.c)
-OBJS    := $(patsubst $(SRC)/%.c,$(OBJ)/%.o,$(SRCS))
-EXE     := $(BIN)/$(shell basename $(CURDIR))
-CFLAGS  := -I$(INCLUDE)
-LDLIBS  := -lm
+CC = gcc
+override CFLAGS += -g -Wno-everything -Wall -Wextra -Wvla -Wpedantic
 
+SRCS = $(shell find . -name '.ccls-cache' -type d -prune -o -type f -name '*.c' -print)
+OBJS = $(patsubst %.c, %.o, $(SRCS))
 
-.PHONY: all run clean
-
-all: $(EXE)
-
-$(EXE): $(OBJS) | $(BIN)
-	$(CC) $(LDFLAGS) $^ -o $@ $(LDLIBS)
-
-$(OBJ)/%.o: $(SRC)/%.c | $(OBJ)
-	$(CC) $(CFLAGS) -c $< -o $@
-
-$(BIN) $(OBJ):
-	$(MKDIR) $@
-
-run: $(EXE)
-	$<
+main: $(OBJS)
+	$(CC) $(CFLAGS) $(OBJS) -o main
 
 clean:
-	$(RMDIR) $(OBJ) $(BIN)
+	rm -f $(OBJS) main
